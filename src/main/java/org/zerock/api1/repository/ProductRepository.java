@@ -17,6 +17,8 @@ public interface ProductRepository extends JpaRepository<ProductEntity, Long> {
         select p from ProductEntity p 
         where 
         p.pname like %:keyword% 
+        and
+        p.status = 0
         """)
     Page<ProductEntity> getByPname(@Param("keyword") String keyword,
                                    Pageable pageable);
