@@ -29,7 +29,7 @@ public class ProductService {
     @Transactional(readOnly = true)
     public PageResponseDTO<ProductListDTO> list(PageRequestDTO pageRequestDTO){
 
-        Pageable pageable = PageRequest.of(pageRequestDTO.getPage() + 1,
+        Pageable pageable = PageRequest.of(pageRequestDTO.getPage() -1,
                 pageRequestDTO.getSize(),
                 Sort.by("pno").descending());
 
