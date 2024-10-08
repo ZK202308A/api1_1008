@@ -1,0 +1,91 @@
+package org.zerock.api1.repository;
+
+
+
+import lombok.extern.log4j.Log4j2;
+import org.junit.jupiter.api.Disabled;
+import org.junit.jupiter.api.Test;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.test.autoconfigure.data.jdbc.DataJdbcTest;
+import org.springframework.boot.test.autoconfigure.jdbc.AutoConfigureTestDatabase;
+import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
+import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.test.annotation.Commit;
+import org.springframework.transaction.annotation.Transactional;
+import org.zerock.api1.domain.ProductEntity;
+import org.zerock.api1.domain.ProductStatus;
+
+import java.beans.Transient;
+import java.util.Optional;
+import java.util.stream.IntStream;
+
+@DataJpaTest
+@Log4j2
+@AutoConfigureTestDatabase(replace = AutoConfigureTestDatabase.Replace.NONE)
+public class ProductTests {
+
+    @Autowired
+    ProductRepository repo;
+
+    @Disabled
+    @Test
+    @Transactional
+    @Commit
+    public void insertDummies() {
+
+        IntStream.rangeClosed(1, 100).forEach(i -> {
+
+            ProductEntity entity = ProductEntity.builder()
+                    .pname("Product " + i)
+                    .pdesc("Product desc " + i)
+                    .price(i)
+                    .build();
+
+            repo.save(entity);
+        });
+    }
+
+    @Test
+    public void testRead() {
+        Long pno = 50L;
+
+        Optional<ProductEntity> result = repo.findById(pno);
+
+        ProductEntity entity = result.orElse(null);
+
+        log.info(entity);
+
+    }
+
+    @Test
+    @Transactional
+    @Commit
+    public void testUpdate() {
+
+        Long pno = 50L;
+
+        Optional<ProductEntity> result = repo.findById(pno);
+
+        ProductEntity entity = result.orElse(null);
+
+        entity.changeStatus(ProductStatus.NOT_SALE);
+
+    }
+
+    @Test
+    @Transactional
+    @Commit
+    public void insertOne() {
+
+        ProductEntity entity = ProductEntity.builder()
+                .pname("Test Product ")
+                .pdesc("Test Product desc ")
+                .price(3000)
+                .build();
+
+        repo.save(entity);
+
+        log.info("-----------------------");
+        log.info(entity.getPno());
+    }
+}
