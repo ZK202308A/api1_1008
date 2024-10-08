@@ -10,12 +10,17 @@ import org.springframework.boot.test.autoconfigure.data.jdbc.DataJdbcTest;
 import org.springframework.boot.test.autoconfigure.jdbc.AutoConfigureTestDatabase;
 import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import org.springframework.test.annotation.Commit;
 import org.springframework.transaction.annotation.Transactional;
 import org.zerock.api1.domain.ProductEntity;
 import org.zerock.api1.domain.ProductStatus;
 
 import java.beans.Transient;
+import java.util.List;
 import java.util.Optional;
 import java.util.stream.IntStream;
 
@@ -88,4 +93,61 @@ public class ProductTests {
         log.info("-----------------------");
         log.info(entity.getPno());
     }
+
+    @Test
+    @Transactional
+    public void testPage() {
+
+        int page = 0;
+        int size = 20;
+
+        Pageable pageable =
+                PageRequest.of(page,size, Sort.by("pno").descending());
+
+        Page<ProductEntity> result = repo.findAll(pageable);
+
+        log.info(result.getTotalElements());
+        log.info(result.getTotalPages());
+        log.info(result.getNumber());
+        log.info(result.getSize());
+
+        result.get().forEach( productEntity ->  log.info(productEntity));
+
+
+    }
+
+    @Test
+    public void testLike() {
+
+        int page = 0;
+        int size = 5;
+
+        Pageable pageable =
+                PageRequest.of(page,size, Sort.by("pno").descending());
+
+        String keyword = "1";
+
+        Page<ProductEntity> result = repo.findByPnameContaining(keyword, pageable);
+
+        result.get().forEach( productEntity -> log.info(productEntity));
+
+    }
+
+    @Test
+    public void testLike2() {
+
+        int page = 0;
+        int size = 5;
+
+        Pageable pageable =
+                PageRequest.of(page,size, Sort.by("pno").descending());
+
+        String keyword = "1";
+
+        Page<ProductEntity> result = repo.getByPname(keyword, pageable);
+
+        result.get().forEach( productEntity -> log.info(productEntity));
+
+    }
 }
+
